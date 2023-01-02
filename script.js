@@ -4,10 +4,12 @@ let jsonData = [];
 let locationData = [];
 let longitude;
 let latitude;
+let requestType;
 const status = document.getElementById("status");
 const weathericon = document.getElementById("weathericon");
 
 function buildAPIRequestUsingLocationData(position) {
+        requestType = "location";
         latitude = position.coords.latitude;
         longitude = position.coords.longitude;
         weatherUrl = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&appid=5ecabb000a89eb6a1a32b5113457f4a0&units=imperial";
@@ -15,10 +17,14 @@ function buildAPIRequestUsingLocationData(position) {
         weatherAPIRequest();
     } 
 
-function buildAPIRequestUsingCity(city, state) {
+function buildAPIRequestUsingCity() {
+    requestType = "cityname"
+    let city = document.getElementById("cityname").value;
+    let state = document.getElementById("statename").value;
     locationUrl = "https://www.mapquestapi.com/geocoding/v1/address?key=VGmsY3ZpSNBA8mWlqtnlczWYmlgm1RuM&location=" + city + "," + state;
     fetch(locationUrl).then(response => response.json()).then(json => {
         locationData.push(json);
+        document.getElementById("city").innerHTML = locationData[0].results[0].locations[0].adminArea5 + ", " + locationData[0].results[0].locations[0].adminArea3;
         latitude = locationData[0].results[0].locations[0].latLng.lat;
         longitude = locationData[0].results[0].locations[0].latLng.lng;
         weatherUrl = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&appid=5ecabb000a89eb6a1a32b5113457f4a0&units=imperial";
@@ -27,14 +33,21 @@ function buildAPIRequestUsingCity(city, state) {
 }
 
 function weatherAPIRequest() {
-    fetch(weatherUrl).then(response => response.json()).then(json => {
-        jsonData.push(json);
-        displayTempData();
-    })
-    fetch(locationUrl).then(response => response.json()).then(json => {
-        locationData.push(json);
-        document.getElementById("city").innerHTML = locationData[0].results[0].locations[0].adminArea5 + ", " + locationData[0].results[0].locations[0].adminArea3;
-    });
+    if (requestType == "location") {
+        fetch(weatherUrl).then(response => response.json()).then(json => {
+            jsonData.push(json);
+            displayTempData();
+        })
+        fetch(locationUrl).then(response => response.json()).then(json => {
+            locationData.push(json);
+            document.getElementById("city").innerHTML = locationData[0].results[0].locations[0].adminArea5 + ", " + locationData[0].results[0].locations[0].adminArea3;
+        });
+    } else {
+        fetch(weatherUrl).then(response => response.json()).then(json => {
+            jsonData.push(json);
+            displayTempData();
+        })
+    }
 }
 
 function displayTempData() {
@@ -73,8 +86,6 @@ function setStatus(x) {
         case 313:
         case 314:
         case 321:
-
-
     }
 }
 
@@ -87,5 +98,5 @@ function setStyleBasedOnWeather(weather) {
     }
 }
 
-buildAPIRequestUsingCity("Philadelphia", "PA")
+
 //navigator.geolocation.getCurrentPosition(buildAPIRequestUsingLocationData)
