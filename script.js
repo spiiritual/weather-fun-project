@@ -34,12 +34,24 @@ function displayTempData() {
     document.getElementById("humidity").value = humidity;
     document.getElementById("humiditytext").innerHTML = "Humidity: " + humidity;
     // add a current time feature
-    //setStatus(jsonData[0].current_weather.weathercode)
+    setStatus(jsonData[0].weather.id);
 }
 
 function setStatus(x) {
     // reminder: add a for loop somewhere
-    
+    switch (x) {
+        case 200:
+        case 201:
+        case 202:
+        case 210:
+        case 211:
+        case 212:
+        case 221:
+        case 230:
+        case 231:
+        case 232:
+            // use setStyleBasedOnWeather() to set bg or something
+    }
 }
 
 function setStyleBasedOnWeather(weather) {
