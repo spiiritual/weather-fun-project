@@ -2,22 +2,32 @@ let weatherUrl;
 let locationUrl;
 let jsonData = [];
 let locationData = [];
+let longitude;
+let latitude;
 const status = document.getElementById("status");
 const weathericon = document.getElementById("weathericon");
 
-function buildAPIRequest(position) {
-    let latitude = position.coords.latitude;
-    let longitude = position.coords.longitude;
-    // Using OpenMeteo means accepting that the data is taken every hour, instead of being real-time. Currently considering switching to NWS when their systems become stable
-    weatherUrl = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&appid=5ecabb000a89eb6a1a32b5113457f4a0&units=imperial";
-    locationUrl = "https://www.mapquestapi.com/geocoding/v1/reverse?key=VGmsY3ZpSNBA8mWlqtnlczWYmlgm1RuM&location=" + latitude + "," + longitude;
-    weatherAPIRequest();
+function buildAPIRequestUsingLocationData(position) {
+        latitude = position.coords.latitude;
+        longitude = position.coords.longitude;
+        weatherUrl = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&appid=5ecabb000a89eb6a1a32b5113457f4a0&units=imperial";
+        locationUrl = "https://www.mapquestapi.com/geocoding/v1/reverse?key=VGmsY3ZpSNBA8mWlqtnlczWYmlgm1RuM&location=" + latitude + "," + longitude;
+        weatherAPIRequest();
+    } 
+
+function buildAPIRequestUsingCity(city, state) {
+    locationUrl = "https://www.mapquestapi.com/geocoding/v1/address?key=VGmsY3ZpSNBA8mWlqtnlczWYmlgm1RuM&location=" + city + "," + state;
+    fetch(locationUrl).then(response => response.json()).then(json => {
+        locationData.push(json);
+        latitude = locationData[0].results[0].locations[0].latLng.lat;
+        longitude = locationData[0].results[0].locations[0].latLng.lng;
+        weatherUrl = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&appid=5ecabb000a89eb6a1a32b5113457f4a0&units=imperial";
+        weatherAPIRequest();
+    });
 }
 
 function weatherAPIRequest() {
-    // For each url built in buildAPIRequest(), fetch the website, convert the data to json format so that it is usable, and push the json data to the specific array to be used later
     fetch(weatherUrl).then(response => response.json()).then(json => {
-        console.log(weatherUrl)
         jsonData.push(json);
         displayTempData();
     })
@@ -51,19 +61,31 @@ function setStatus(x) {
         case 231:
         case 232:
             // use setStyleBasedOnWeather() to set bg or something
+            document.getElementById("status").innerHTML = "Thunderstorms";
+            setStyleBasedOnWeather("thunderstorm");
+            break;
+        case 300:
+        case 301:
+        case 302:
+        case 310:
+        case 311:
+        case 312:
+        case 313:
+        case 314:
+        case 321:
+
+
     }
 }
 
 function setStyleBasedOnWeather(weather) {
     // to fulfill perf task question later on
-    if(weather == "clear") {
+    if (weather == "clear") {
         document.getElementById("weathericon").src = "https://img.icons8.com/stickers/100/null/summer.png";
-    } else if(weather == "cloudy") {
+    } else if (weather == "cloudy") {
         weathericon.src = "https://img.icons8.com/stickers/100/null/partly-cloudy-day.png"
     }
 }
 
-
-
-
-navigator.geolocation.getCurrentPosition(buildAPIRequest)
+buildAPIRequestUsingCity("Philadelphia", "PA")
+//navigator.geolocation.getCurrentPosition(buildAPIRequestUsingLocationData)
