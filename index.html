@@ -64,7 +64,8 @@
             <option value="WI">Wisconsin</option>
             <option value="WY">Wyoming</option>
         </select>
-        <button onclick="buildAPIRequestUsingCity()"></button>
+        <button onclick="buildAPIRequestUsingCity()">Submit</button>
+        <button onclick="navigator.geolocation.getCurrentPosition(buildAPIRequestUsingLocationData)">Use Current Location</button>
     <p id="temp"></p>
     <img src="broken.png" alt="weather icon" id="weathericon">
     <p id="status"></p>

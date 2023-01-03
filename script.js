@@ -15,7 +15,7 @@ function buildAPIRequestUsingLocationData(position) {
         weatherUrl = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&appid=5ecabb000a89eb6a1a32b5113457f4a0&units=imperial";
         locationUrl = "https://www.mapquestapi.com/geocoding/v1/reverse?key=VGmsY3ZpSNBA8mWlqtnlczWYmlgm1RuM&location=" + latitude + "," + longitude;
         weatherAPIRequest();
-    } 
+} 
 
 function buildAPIRequestUsingCity() {
     requestType = "cityname"
@@ -36,6 +36,7 @@ function weatherAPIRequest() {
     if (requestType == "location") {
         fetch(weatherUrl).then(response => response.json()).then(json => {
             jsonData.push(json);
+            console.log(jsonData)
             displayTempData();
         })
         fetch(locationUrl).then(response => response.json()).then(json => {
@@ -64,22 +65,29 @@ function setStatus(x) {
     // reminder: add a for loop somewhere
     switch (x) {
         case 200:
+            status.innerHTML = "Thunderstorms with Light Rain";
+            break
         case 201:
+            status.innerHTML = "Thunderstorms with Rain";
+            break
         case 202:
+            status.innerHTML = "Thunderstorms with Heavy Rain";
+            break
         case 210:
         case 211:
         case 212:
         case 221:
+            status.innerHTML = "Thunderstorms";
+            break
         case 230:
         case 231:
         case 232:
-            // use setStyleBasedOnWeather() to set bg or something
-            document.getElementById("status").innerHTML = "Thunderstorms";
-            setStyleBasedOnWeather("thunderstorm");
-            break;
+            status.innerHTML = "Drizzling Thunderstorms";
+            break
         case 300:
         case 301:
         case 302:
+            status.innerHTML = "D"
         case 310:
         case 311:
         case 312:
@@ -99,4 +107,3 @@ function setStyleBasedOnWeather(weather) {
 }
 
 
-//navigator.geolocation.getCurrentPosition(buildAPIRequestUsingLocationData)
