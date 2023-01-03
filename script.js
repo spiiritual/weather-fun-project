@@ -5,17 +5,17 @@ let locationData = [];
 let longitude;
 let latitude;
 let requestType;
-const status = document.getElementById("status");
+const description = document.getElementById("description");
 const weathericon = document.getElementById("weathericon");
 
 function buildAPIRequestUsingLocationData(position) {
-        requestType = "location";
-        latitude = position.coords.latitude;
-        longitude = position.coords.longitude;
-        weatherUrl = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&appid=5ecabb000a89eb6a1a32b5113457f4a0&units=imperial";
-        locationUrl = "https://www.mapquestapi.com/geocoding/v1/reverse?key=VGmsY3ZpSNBA8mWlqtnlczWYmlgm1RuM&location=" + latitude + "," + longitude;
-        weatherAPIRequest();
-} 
+    requestType = "location";
+    latitude = position.coords.latitude;
+    longitude = position.coords.longitude;
+    weatherUrl = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&appid=5ecabb000a89eb6a1a32b5113457f4a0&units=imperial";
+    locationUrl = "https://www.mapquestapi.com/geocoding/v1/reverse?key=VGmsY3ZpSNBA8mWlqtnlczWYmlgm1RuM&location=" + latitude + "," + longitude;
+    weatherAPIRequest();
+}
 
 function buildAPIRequestUsingCity() {
     requestType = "cityname"
@@ -57,43 +57,55 @@ function displayTempData() {
     document.getElementById('temp').innerHTML = temperature + "°F";
     document.getElementById("humidity").value = humidity;
     document.getElementById("humiditytext").innerHTML = "Humidity: " + humidity;
+    document.getElementById("status").innerHTML = jsonData[0].weather[0].main;
     // add a current time feature
-    setStatus(jsonData[0].weather.id);
+    setDescription(jsonData[0].weather.id);
 }
 
-function setStatus(x) {
+function setDescription(x) {
     // reminder: add a for loop somewhere
     switch (x) {
         case 200:
-            status.innerHTML = "Thunderstorms with Light Rain";
+            description.innerHTML = "Thunderstorms with Light Rain";
             break
         case 201:
-            status.innerHTML = "Thunderstorms with Rain";
+            description.innerHTML = "Thunderstorms with Rain";
             break
         case 202:
-            status.innerHTML = "Thunderstorms with Heavy Rain";
+            description.innerHTML = "Thunderstorms with Heavy Rain";
             break
         case 210:
         case 211:
         case 212:
         case 221:
-            status.innerHTML = "Thunderstorms";
+            description.innerHTML = "Thunderstorms";
             break
         case 230:
         case 231:
         case 232:
-            status.innerHTML = "Drizzling Thunderstorms";
+            description.innerHTML = "Drizzling Thunderstorms";
             break
         case 300:
-        case 301:
-        case 302:
-            status.innerHTML = "D"
         case 310:
+            description.innerHTML = "Light Drizzling";
+            break
+        case 301:
         case 311:
+            description.innerHTML = "Drizzling";
+            break
+        case 302:
         case 312:
+            description.innerHTML = "Heavy Drizzling";
+            break
         case 313:
+            description.innerHTML = "Shower Rain and Drizzle";
+            break
         case 314:
+            description.innerHTML = "Heavy Shower Rain and Drizzle";
+            break
         case 321:
+            description.innerHTML = "Shower Drizzle";
+            break
     }
 }
 
