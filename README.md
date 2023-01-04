@@ -17,7 +17,6 @@ third rewrite: switch to openweathermap + mapquest api for reverse and regular g
 ---
 
 most of the beginning work was done on codio so no commits before the 2nd but started on the 23rd<br><br>
-
 ---
 
 **LIFE IS SUFFERING**
