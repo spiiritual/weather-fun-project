@@ -106,7 +106,7 @@ function setDescription(x) {
                 description.innerHTML = "Shower Drizzle";
                 break;
         }
-    } else if (x >= 400 && x <= 499) {
+    } else if (x >= 500 && x <= 599) {
         switch (x) {
             case 500:
                 description.innerHTML = "Light Rain";
