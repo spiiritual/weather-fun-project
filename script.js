@@ -2,37 +2,31 @@ let weatherUrl;
 let locationUrl;
 let jsonData = [];
 let locationData = [];
-let longitude;
-let latitude;
-let requestType;
-const description = document.getElementById("description");
-const weathericon = document.getElementById("weathericon");
+
 
 function buildAPIRequestUsingLocationData(position) {
-    requestType = "location";
-    latitude = position.coords.latitude;
-    longitude = position.coords.longitude;
+    let latitude = position.coords.latitude;
+    let longitude = position.coords.longitude;
     weatherUrl = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&appid=5ecabb000a89eb6a1a32b5113457f4a0&units=imperial";
     locationUrl = "https://www.mapquestapi.com/geocoding/v1/reverse?key=VGmsY3ZpSNBA8mWlqtnlczWYmlgm1RuM&location=" + latitude + "," + longitude;
-    weatherAPIRequest();
+    weatherAPIRequest("location");
 }
 
 function buildAPIRequestUsingCity() {
-    requestType = "cityname"
     let city = document.getElementById("cityname").value;
     let state = document.getElementById("statename").value;
     locationUrl = "https://www.mapquestapi.com/geocoding/v1/address?key=VGmsY3ZpSNBA8mWlqtnlczWYmlgm1RuM&location=" + city + "," + state;
     fetch(locationUrl).then(response => response.json()).then(json => {
         locationData.push(json);
         document.getElementById("city").innerHTML = locationData[0].results[0].locations[0].adminArea5 + ", " + locationData[0].results[0].locations[0].adminArea3;
-        latitude = locationData[0].results[0].locations[0].latLng.lat;
-        longitude = locationData[0].results[0].locations[0].latLng.lng;
+        let latitude = locationData[0].results[0].locations[0].latLng.lat;
+        let longitude = locationData[0].results[0].locations[0].latLng.lng;
         weatherUrl = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&appid=5ecabb000a89eb6a1a32b5113457f4a0&units=imperial";
-        weatherAPIRequest();
+        weatherAPIRequest("cityname");
     });
 }
 
-function weatherAPIRequest() {
+function weatherAPIRequest(requestType) {
     if (requestType == "location") {
         fetch(weatherUrl).then(response => response.json()).then(json => {
             jsonData.push(json);
@@ -62,6 +56,7 @@ function displayTempData() {
 
 function setDescription(x) {
     // idea for a for loop: use a for loop to set an image for bg AND for setstylebasedonweather
+    const description = document.getElementById("description");
     if (x >= 200 && x <= 299) {
         switch (x) {
             case 200:
@@ -180,6 +175,7 @@ function setDescription(x) {
 
 function setStyleBasedOnWeather(weather) {
     // to fulfill perf task question later on
+    const weathericon = document.getElementById("weathericon");
     if (weather == "clear") {
         document.getElementById("weathericon").src = "https://img.icons8.com/stickers/100/null/summer.png";
     } else if (weather == "cloudy") {
