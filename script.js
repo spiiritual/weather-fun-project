@@ -50,7 +50,6 @@ function displayTempData() {
     document.getElementById('temp').innerHTML = temperature + "°F";
     document.getElementById("humidity").value = humidity;
     document.getElementById("humiditytext").innerHTML = "Humidity: " + humidity;
-    document.getElementById("status").innerHTML = jsonData[0].weather[0].main;
     setDescription(jsonData[0].weather[0].id);
 }
 
