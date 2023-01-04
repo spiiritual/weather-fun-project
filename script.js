@@ -63,49 +63,87 @@ function displayTempData() {
 }
 
 function setDescription(x) {
-    // reminder: add a for loop somewhere
+    // idea for a for loop: use a for loop to set an image for bg AND for setstylebasedonweather
     switch (x) {
         case 200:
             description.innerHTML = "Thunderstorms with Light Rain";
-            break
+            break;
         case 201:
             description.innerHTML = "Thunderstorms with Rain";
-            break
+            break;
         case 202:
             description.innerHTML = "Thunderstorms with Heavy Rain";
-            break
+            break;
         case 210:
         case 211:
         case 212:
         case 221:
             description.innerHTML = "Thunderstorms";
-            break
+            break;
         case 230:
         case 231:
         case 232:
             description.innerHTML = "Drizzling Thunderstorms";
-            break
+            break;
         case 300:
         case 310:
             description.innerHTML = "Light Drizzling";
-            break
+            break;
         case 301:
         case 311:
             description.innerHTML = "Drizzling";
-            break
+            break;
         case 302:
         case 312:
             description.innerHTML = "Heavy Drizzling";
-            break
+            break;
         case 313:
             description.innerHTML = "Shower Rain and Drizzle";
-            break
+            break;
         case 314:
             description.innerHTML = "Heavy Shower Rain and Drizzle";
-            break
+            break;
         case 321:
             description.innerHTML = "Shower Drizzle";
-            break
+            break;
+        case 500:
+            description.innerHTML = "Light Rain";
+            break;
+        case 501:
+            description.innerHTML = "Rain";
+            break;
+        case 502:
+        case 503:
+            description.innerHTML = "Heavy Rain";
+            break;
+        case 504:
+            description.innerHTML = "Extreme Rain";
+            break;
+        case 511:
+            description.innerHTML = "Freezing Rain";
+            break;
+        case 520:
+            description.innerHTML = "Light Showers";
+            break;
+        case 521:
+            description.innerHTML = "Showers";
+            break;
+        case 522:
+        case 531:
+            description.innerHTML = "Heavy Showers";
+            break;
+        case 600:
+            description.innerHTML = "Light Snow";
+            break;
+        case 601:
+            description.innerHTML = "Snow";
+            break;
+        case 602:
+            description.innerHTML = "Heavy Snow";
+            break;
+        case 611:
+            description.innerHTML = "Sleet";
+            break;
     }
 }
 
