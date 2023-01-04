@@ -62,88 +62,121 @@ function displayTempData() {
 
 function setDescription(x) {
     // idea for a for loop: use a for loop to set an image for bg AND for setstylebasedonweather
-    switch (x) {
-        case 200:
-            description.innerHTML = "Thunderstorms with Light Rain";
-            break;
-        case 201:
-            description.innerHTML = "Thunderstorms with Rain";
-            break;
-        case 202:
-            description.innerHTML = "Thunderstorms with Heavy Rain";
-            break;
-        case 210:
-        case 211:
-        case 212:
-        case 221:
-            description.innerHTML = "Thunderstorms";
-            break;
-        case 230:
-        case 231:
-        case 232:
-            description.innerHTML = "Drizzling Thunderstorms";
-            break;
-        case 300:
-        case 310:
-            description.innerHTML = "Light Drizzling";
-            break;
-        case 301:
-        case 311:
-            description.innerHTML = "Drizzling";
-            break;
-        case 302:
-        case 312:
-            description.innerHTML = "Heavy Drizzling";
-            break;
-        case 313:
-            description.innerHTML = "Shower Rain and Drizzle";
-            break;
-        case 314:
-            description.innerHTML = "Heavy Shower Rain and Drizzle";
-            break;
-        case 321:
-            description.innerHTML = "Shower Drizzle";
-            break;
-        case 500:
-            description.innerHTML = "Light Rain";
-            break;
-        case 501:
-            description.innerHTML = "Rain";
-            break;
-        case 502:
-        case 503:
-            description.innerHTML = "Heavy Rain";
-            break;
-        case 504:
-            description.innerHTML = "Extreme Rain";
-            break;
-        case 511:
-            description.innerHTML = "Freezing Rain";
-            break;
-        case 520:
-            description.innerHTML = "Light Showers";
-            break;
-        case 521:
-            description.innerHTML = "Showers";
-            break;
-        case 522:
-        case 531:
-            description.innerHTML = "Heavy Showers";
-            break;
-        case 600:
-            description.innerHTML = "Light Snow";
-            break;
-        case 601:
-            description.innerHTML = "Snow";
-            break;
-        case 602:
-            description.innerHTML = "Heavy Snow";
-            break;
-        case 611:
-            description.innerHTML = "Sleet";
-            break;
+    if (x >= 200 && x <= 299) {
+        switch (x) {
+            case 200:
+                description.innerHTML = "Thunderstorms with Light Rain";
+                break;
+            case 201:
+                description.innerHTML = "Thunderstorms with Rain";
+                break;
+            case 202:
+                description.innerHTML = "Thunderstorms with Heavy Rain";
+                break;
+            case 210:
+            case 211:
+            case 212:
+            case 221:
+                description.innerHTML = "Thunderstorms";
+                break;
+            case 230:
+            case 231:
+            case 232:
+                description.innerHTML = "Drizzling Thunderstorms";
+                break;
+        }
+    } else if (x >= 300 && x <= 399) {
+        switch (x) {
+            case 300:
+            case 310:
+                description.innerHTML = "Light Drizzling";
+                break;
+            case 301:
+            case 311:
+                description.innerHTML = "Drizzling";
+                break;
+            case 302:
+            case 312:
+                description.innerHTML = "Heavy Drizzling";
+                break;
+            case 313:
+                description.innerHTML = "Shower Rain and Drizzle";
+                break;
+            case 314:
+                description.innerHTML = "Heavy Shower Rain and Drizzle";
+                break;
+            case 321:
+                description.innerHTML = "Shower Drizzle";
+                break;
+        }
+    } else if (x >= 400 && x <= 499) {
+        switch (x) {
+            case 500:
+                description.innerHTML = "Light Rain";
+                break;
+            case 501:
+                description.innerHTML = "Rain";
+                break;
+            case 502:
+            case 503:
+                description.innerHTML = "Heavy Rain";
+                break;
+            case 504:
+                description.innerHTML = "Extreme Rain";
+                break;
+            case 511:
+                description.innerHTML = "Freezing Rain";
+                break;
+            case 520:
+                description.innerHTML = "Light Showers";
+                break;
+            case 521:
+                description.innerHTML = "Showers";
+                break;
+            case 522:
+            case 531:
+                description.innerHTML = "Heavy Showers";
+                break;
+        }
+    } else if (x >= 600 && x <= 699) {
+        switch (x) {
+            case 600:
+                description.innerHTML = "Light Snow";
+                break;
+            case 601:
+                description.innerHTML = "Snow";
+                break;
+            case 602:
+                description.innerHTML = "Heavy Snow";
+                break;
+            case 611:
+                description.innerHTML = "Sleet";
+                break;
+            case 612:
+                description.innerHTML = "Light Showers and Sleet";
+                break;
+            case 613:
+                description.innerHTML = "Showers and Sleet";
+                break;
+            case 615:
+                description.innerHTML = "Light Rain and Snow";
+                break;
+            case 616:
+                description.innerHTML = "Rain and Snow";
+                break;
+            case 620:
+                description.innerHTML = "Light Showers and Snow";
+                break;
+            case 621:
+                description.innerHTML = "Showers and Snow";
+                break;
+            case 622:
+                description.innerHTML = "Heavy Showers and Snow";
+                break;
+        }
     }
 }
+
 
 function setStyleBasedOnWeather(weather) {
     // to fulfill perf task question later on
