@@ -57,7 +57,9 @@ function displayTempData() {
 function setDescription(x) {
     // idea for a for loop: use a for loop to set an image for bg AND for setstylebasedonweather
     const description = document.getElementById("description");
-    if (x >= 200 && x <= 299) {
+    if (x == 800) {
+        description.innerHTML = "Clear Skies"
+    } else if (x >= 200 && x <= 299) {
         switch (x) {
             case 200:
                 description.innerHTML = "Thunderstorms with Light Rain";
@@ -202,8 +204,6 @@ function setDescription(x) {
                 description.innerHTML = "Tornadoes";
                 break;
         }
-    } else if (x == 800) {
-        description.innerHTML = "Clear Skies"
     }
 }
 
