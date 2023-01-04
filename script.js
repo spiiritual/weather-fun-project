@@ -169,6 +169,41 @@ function setDescription(x) {
                 description.innerHTML = "Heavy Showers and Snow";
                 break;
         }
+    } else if (x >= 700 && x <= 799) {
+        switch (x) {
+            case 701:
+                description.innerHTML = "Mist";
+                break;
+            case 711:
+                description.innerHTML = "Smoke";
+                break;
+            case 721:
+                description.innerHTML = "Haze";
+                break;
+            case 731:
+                description.innerHTML = "Dust";
+                break;
+            case 741:
+                description.innerHTML = "Fog";
+                break;
+            case 751:
+                description.innerHTML = "Sand Swirls";
+                break;
+            case 761:
+                description.innerHTML = "Dust";
+                break;
+            case 762:
+                description.innerHTML = "Volcanic Ash"
+                break;
+            case 771:
+                description.innerHTML = "Squalls";
+                break;
+            case 781:
+                description.innerHTML = "Tornadoes";
+                break;
+        }
+    } else if (x == 800) {
+        description.innerHTML = "Clear Skies"
     }
 }
 
