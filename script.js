@@ -51,15 +51,13 @@ function displayTempData() {
     document.getElementById("humidity").value = humidity;
     document.getElementById("humiditytext").innerHTML = "Humidity: " + humidity;
     document.getElementById("status").innerHTML = jsonData[0].weather[0].main;
-    setDescription(jsonData[0].weather.id);
+    setDescription(jsonData[0].weather[0].id);
 }
 
 function setDescription(x) {
     // idea for a for loop: use a for loop to set an image for bg AND for setstylebasedonweather
     const description = document.getElementById("description");
-    if (x == 800) {
-        description.innerHTML = "Clear Skies"
-    } else if (x >= 200 && x <= 299) {
+    if (x >= 200 && x <= 299) {
         switch (x) {
             case 200:
                 description.innerHTML = "Thunderstorms with Light Rain";
@@ -202,6 +200,24 @@ function setDescription(x) {
                 break;
             case 781:
                 description.innerHTML = "Tornadoes";
+                break;
+        }
+    } else if (x >= 800 && x <= 899) {
+        switch (x) {
+            case 800:
+                description.innerHTML = "Clear Skies";
+                break;
+            case 801:
+                description.innerHTML = "Slight Cloudiness";
+                break;
+            case 802:
+                description.innerHTML = "Partly Cloudy";
+                break;
+            case 803:
+                description.innerHTML = "Mostly Cloudy";
+                break;
+            case 804:
+                description.innerHTML = "Cloudy";
                 break;
         }
     }
