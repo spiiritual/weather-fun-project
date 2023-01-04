@@ -36,7 +36,6 @@ function weatherAPIRequest() {
     if (requestType == "location") {
         fetch(weatherUrl).then(response => response.json()).then(json => {
             jsonData.push(json);
-            console.log(jsonData)
             displayTempData();
         })
         fetch(locationUrl).then(response => response.json()).then(json => {
@@ -52,13 +51,12 @@ function weatherAPIRequest() {
 }
 
 function displayTempData() {
-    let temperature = Math.round(jsonData[0].main.temp)
-    let humidity = Math.round(jsonData[0].main.humidity)
+    let temperature = Math.round(jsonData[0].main.temp);
+    let humidity = Math.round(jsonData[0].main.humidity);
     document.getElementById('temp').innerHTML = temperature + "°F";
     document.getElementById("humidity").value = humidity;
     document.getElementById("humiditytext").innerHTML = "Humidity: " + humidity;
     document.getElementById("status").innerHTML = jsonData[0].weather[0].main;
-    // add a current time feature
     setDescription(jsonData[0].weather.id);
 }
 
