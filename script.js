@@ -209,7 +209,6 @@ function setDescription(x) {
 
 
 function setStyleBasedOnWeather(weather) {
-    // to fulfill perf task question later on
     const weathericon = document.getElementById("weathericon");
     if (weather == "clear") {
         document.getElementById("weathericon").src = "https://img.icons8.com/stickers/100/null/summer.png";
