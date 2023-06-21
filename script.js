@@ -1,235 +1,236 @@
-let weatherUrl;
-let locationUrl;
+// Variables for code
 let jsonData = [];
 let locationData = [];
+let stage = 0;
+const mapquest_url = "https://www.mapquestapi.com/geocoding/v1/address?"; // City and State data by Mapquest
+const weather_url = "https://api.openweathermap.org/data/2.5/weather?"; // Weather data by OpenWeatherMap
+const mapquest_api_key = "INSERT_API_KEY";
+const weather_api_key = "INSERT_API_KEY";
 
-
-function buildAPIRequestUsingLocationData(position) {
-    let latitude = position.coords.latitude;
-    let longitude = position.coords.longitude;
-    weatherUrl = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&appid=5ecabb000a89eb6a1a32b5113457f4a0&units=imperial";
-    locationUrl = "https://www.mapquestapi.com/geocoding/v1/reverse?key=VGmsY3ZpSNBA8mWlqtnlczWYmlgm1RuM&location=" + latitude + "," + longitude;
-    weatherAPIRequest("location");
+function locationDataAPI(position) {
+  let latitude = position.coords.latitude;
+  let longitude = position.coords.longitude;
+  locationData = [];
+  jsonData = [];
+  document.getElementById("overlay").style.display = "flex";
+  weatherAPIRequest("location", latitude, longitude)
 }
 
-function buildAPIRequestUsingCity() {
-    let city = document.getElementById("cityname").value;
-    let state = document.getElementById("statename").value;
-    locationUrl = "https://www.mapquestapi.com/geocoding/v1/address?key=VGmsY3ZpSNBA8mWlqtnlczWYmlgm1RuM&location=" + city + "," + state;
-    fetch(locationUrl).then(response => response.json()).then(json => {
-        locationData.push(json);
-        document.getElementById("city").innerHTML = locationData[0].results[0].locations[0].adminArea5 + ", " + locationData[0].results[0].locations[0].adminArea3;
-        let latitude = locationData[0].results[0].locations[0].latLng.lat;
-        let longitude = locationData[0].results[0].locations[0].latLng.lng;
-        weatherUrl = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&appid=5ecabb000a89eb6a1a32b5113457f4a0&units=imperial";
-        weatherAPIRequest("cityname");
+function cityDataAPI() {
+  let city = (document.getElementById("cityname").value).replace(/\s+/g, '');
+  let state = document.getElementById("statename").value;
+  locationData = [];
+  jsonData = [];
+  document.getElementById("overlay").style.display = "flex";
+  fetch(mapquest_url + new URLSearchParams({
+    key: mapquest_api_key,
+    location: `${city},${state},USA`
+  })).then(response => response.json()).then(json => {
+    locationData.push(json);
+    weatherAPIRequest("city", locationData[0].results[0].locations[0].latLng.lat, locationData[0].results[0].locations[0].latLng.lng);
+  })
+}
+
+function weatherAPIRequest(request_type, latitude, longitude) {
+  if (request_type == "location") {
+    fetch(weather_url + new URLSearchParams({
+      lat: latitude,
+      lon: longitude,
+      appid: weather_api_key,
+      units: "imperial"
+    })).then(response => response.json()).then(json => {
+      jsonData.push(json);
+      loadLocationAndTempData(request_type)
     });
-}
-
-function weatherAPIRequest(requestType) {
-    if (requestType == "location") {
-        fetch(weatherUrl).then(response => response.json()).then(json => {
-            jsonData.push(json);
-            displayTempData();
-        })
-        fetch(locationUrl).then(response => response.json()).then(json => {
-            locationData.push(json);
-            document.getElementById("city").innerHTML = locationData[0].results[0].locations[0].adminArea5 + ", " + locationData[0].results[0].locations[0].adminArea3;
-        });
-    } else {
-        fetch(weatherUrl).then(response => response.json()).then(json => {
-            jsonData.push(json);
-            displayTempData();
-        })
-    }
+    fetch(mapquest_url + new URLSearchParams({
+      key: mapquest_api_key,
+      location: `${latitude},${longitude}`
+    })).then(response => response.json()).then(json => {
+      locationData.push(json);
+      loadLocationAndTempData(request_type)
+    })
+  } else if (request_type == "city") {
+    fetch(weather_url + new URLSearchParams({
+      lat: latitude,
+      lon: longitude,
+      appid: weather_api_key,
+      units: "imperial"
+    })).then(response => response.json()).then(json => {
+      jsonData.push(json);
+      loadLocationAndTempData(request_type)
+    })
+  }
 }
 
 function displayTempData() {
-    let temperature = Math.round(jsonData[0].main.temp);
-    let humidity = Math.round(jsonData[0].main.humidity);
-    document.getElementById('temp').innerHTML = temperature + "°F";
-    document.getElementById("humidity").value = humidity;
-    document.getElementById("humiditytext").innerHTML = "Humidity: " + humidity;
-    setDescription(jsonData[0].weather[0].id);
+  const humidity = Math.round(jsonData[0].main.humidity);
+  const temperature = Math.round(jsonData[0].main.temp);
+  const feels_like = Math.round(jsonData[0].main.feels_like);
+  const city = locationData[0].results[0].locations[0].adminArea5;
+  const state = locationData[0].results[0].locations[0].adminArea3;
+
+  document.getElementById("temp").innerHTML = `${temperature}°F`;
+  document.getElementById("feelslike").innerHTML = `Feels like: ${feels_like}°F`;
+  document.getElementById("humiditytext").innerHTML = `Humidity: ${humidity}`;
+  document.getElementById("city").innerHTML = `${city}, ${state}`;
+  document.getElementById("overlay").style.display = "none";
+
+  setDescription(jsonData[0].weather[0].id);
+  setStyleBasedOnWeather(jsonData[0].weather[0].main);
+  displayExtremeWeatherWarning(jsonData[0].weather[0].main);
 }
 
-function setDescription(x) {
-    // idea for a for loop: use a for loop to set an image for bg AND for setstylebasedonweather
-    const description = document.getElementById("description");
-    if (x >= 200 && x <= 299) {
-        switch (x) {
-            case 200:
-                description.innerHTML = "Thunderstorms with Light Rain";
-                break;
-            case 201:
-                description.innerHTML = "Thunderstorms with Rain";
-                break;
-            case 202:
-                description.innerHTML = "Thunderstorms with Heavy Rain";
-                break;
-            case 210:
-            case 211:
-            case 212:
-            case 221:
-                description.innerHTML = "Thunderstorms";
-                break;
-            case 230:
-            case 231:
-            case 232:
-                description.innerHTML = "Drizzling Thunderstorms";
-                break;
-        }
-    } else if (x >= 300 && x <= 399) {
-        switch (x) {
-            case 300:
-            case 310:
-                description.innerHTML = "Light Drizzling";
-                break;
-            case 301:
-            case 311:
-                description.innerHTML = "Drizzling";
-                break;
-            case 302:
-            case 312:
-                description.innerHTML = "Heavy Drizzling";
-                break;
-            case 313:
-                description.innerHTML = "Shower Rain and Drizzle";
-                break;
-            case 314:
-                description.innerHTML = "Heavy Shower Rain and Drizzle";
-                break;
-            case 321:
-                description.innerHTML = "Shower Drizzle";
-                break;
-        }
-    } else if (x >= 500 && x <= 599) {
-        switch (x) {
-            case 500:
-                description.innerHTML = "Light Rain";
-                break;
-            case 501:
-                description.innerHTML = "Rain";
-                break;
-            case 502:
-            case 503:
-                description.innerHTML = "Heavy Rain";
-                break;
-            case 504:
-                description.innerHTML = "Extreme Rain";
-                break;
-            case 511:
-                description.innerHTML = "Freezing Rain";
-                break;
-            case 520:
-                description.innerHTML = "Light Showers";
-                break;
-            case 521:
-                description.innerHTML = "Showers";
-                break;
-            case 522:
-            case 531:
-                description.innerHTML = "Heavy Showers";
-                break;
-        }
-    } else if (x >= 600 && x <= 699) {
-        switch (x) {
-            case 600:
-                description.innerHTML = "Light Snow";
-                break;
-            case 601:
-                description.innerHTML = "Snow";
-                break;
-            case 602:
-                description.innerHTML = "Heavy Snow";
-                break;
-            case 611:
-                description.innerHTML = "Sleet";
-                break;
-            case 612:
-                description.innerHTML = "Light Showers and Sleet";
-                break;
-            case 613:
-                description.innerHTML = "Showers and Sleet";
-                break;
-            case 615:
-                description.innerHTML = "Light Rain and Snow";
-                break;
-            case 616:
-                description.innerHTML = "Rain and Snow";
-                break;
-            case 620:
-                description.innerHTML = "Light Showers and Snow";
-                break;
-            case 621:
-                description.innerHTML = "Showers and Snow";
-                break;
-            case 622:
-                description.innerHTML = "Heavy Showers and Snow";
-                break;
-        }
-    } else if (x >= 700 && x <= 799) {
-        switch (x) {
-            case 701:
-                description.innerHTML = "Mist";
-                break;
-            case 711:
-                description.innerHTML = "Smoke";
-                break;
-            case 721:
-                description.innerHTML = "Haze";
-                break;
-            case 731:
-                description.innerHTML = "Dust";
-                break;
-            case 741:
-                description.innerHTML = "Fog";
-                break;
-            case 751:
-                description.innerHTML = "Sand Swirls";
-                break;
-            case 761:
-                description.innerHTML = "Dust";
-                break;
-            case 762:
-                description.innerHTML = "Volcanic Ash"
-                break;
-            case 771:
-                description.innerHTML = "Squalls";
-                break;
-            case 781:
-                description.innerHTML = "Tornadoes";
-                break;
-        }
-    } else if (x >= 800 && x <= 899) {
-        switch (x) {
-            case 800:
-                description.innerHTML = "Clear Skies";
-                break;
-            case 801:
-                description.innerHTML = "Slight Cloudiness";
-                break;
-            case 802:
-                description.innerHTML = "Partly Cloudy";
-                break;
-            case 803:
-                description.innerHTML = "Mostly Cloudy";
-                break;
-            case 804:
-                description.innerHTML = "Cloudy";
-                break;
-        }
+function setDescription(id) {
+  const description = document.getElementById("description");
+  const possible_descriptions = [
+    { id: 2, description: "Click Earth to find out the weather!" },
+    { id: 200, description: "Thunderstorms with Light Rain" },
+    { id: 201, description: "Thunderstorms with Rain" },
+    { id: 202, description: "Thunderstorms with Heavy Rain" },
+    { ids: [210, 211, 212, 221], description: "Thunderstorms" },
+    { ids: [230, 231, 232], description: "Drizzling Thunderstorms" },
+    { ids: [300, 310], description: "Light Drizzling" },
+    { ids: [301, 311], description: "Drizzling" },
+    { ids: [302, 312], description: "Heavy Drizzling" },
+    { id: 313, description: "Shower Rain and Drizzle" },
+    { id: 314, description: "Heavy Shower Rain and Drizzle" },
+    { id: 321, description: "Shower Drizzle" },
+    { id: 500, description: "Light Rain" },
+    { id: 501, description: "Rain" },
+    { ids: [502, 503], description: "Heavy Rain" },
+    { id: 504, description: "Extreme Rain" },
+    { id: 511, description: "Freezing Rain" },
+    { id: 520, description: "Light Showers" },
+    { id: 521, description: "Showers" },
+    { ids: [522, 531], description: "Heavy Showers" },
+    { id: 600, description: "Light Snow" },
+    { id: 601, description: "Snow" },
+    { id: 602, description: "Heavy Snow" },
+    { id: 611, description: "Sleet" },
+    { id: 612, description: "Light Showers and Sleet" },
+    { id: 613, description: "Showers and Sleet" },
+    { id: 615, description: "Light Rain and Snow" },
+    { id: 616, description: "Rain and Snow" },
+    { id: 620, description: "Light Showers and Snow" },
+    { id: 621, description: "Showers and Snow" },
+    { id: 622, description: "Heavy Showers and Snow" },
+    { id: 701, description: "Mist" },
+    { id: 711, description: "Smoke" },
+    { id: 721, description: "Haze" },
+    { id: 731, description: "Sand Swirls" },
+    { id: 741, description: "Fog" },
+    { id: 751, description: "Sand" },
+    { id: 761, description: "Dust" },
+    { id: 762, description: "Volcanic Ash" },
+    { id: 771, description: "Squalls" },
+    { id: 781, description: "Tornadoes" },
+    { id: 800, description: "Clear Skies" },
+    { id: 801, description: "Slight Cloudiness" },
+    { id: 802, description: "Partly Cloudy" },
+    { id: 803, description: "Mostly Cloudy" },
+    { id: 804, description: "Cloudy" },
+  ];
+
+  for (let i = 0; i < possible_descriptions.length; i++) {
+    if (possible_descriptions[i].id == id) {
+      description.innerHTML = possible_descriptions[i].description
+    } else if (possible_descriptions[i].ids == id) {
+      description.innerHTML = possible_descriptions[i].description
     }
+  }
 }
-
 
 function setStyleBasedOnWeather(weather) {
-    const weathericon = document.getElementById("weathericon");
-    if (weather == "clear") {
-        document.getElementById("weathericon").src = "https://img.icons8.com/stickers/100/null/summer.png";
-    } else if (weather == "cloudy") {
-        weathericon.src = "https://img.icons8.com/stickers/100/null/partly-cloudy-day.png"
+  const weathericon = document.getElementById("weathericon");
+  const body = document.getElementById("body");
+  weathericon.style.display = "block";
+  // All icons by Icons8
+  if (weather == "Clear") {
+    weathericon.src = "https://img.icons8.com/stickers/100/null/summer.png"
+  } else if (weather == "Clouds") {
+    const weather_code = jsonData[0].weather[0].id;
+    if (weather_code == 801 || weather_code == 802) {
+      weathericon.src = "https://img.icons8.com/stickers/100/null/partly-cloudy-day.png";
+    } else if (weather_code == 803 || weather_code == 804) {
+      weathericon.src = "https://img.icons8.com/stickers/100/null/cloud--v1.png";
     }
+    body.style.backgroundImage = 'url("https://i.imgur.com/LieJSsQ.jpeg")'
+  } else if (weather == "Thunderstorm") {
+    weathericon.src = "https://img.icons8.com/stickers/100/null/storm.png"
+    body.style.backgroundImage = 'url("https://images.unsplash.com/photo-1551234250-d88208c2ce14?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1931&q=80")' // Photo by Michael D on Unsplash
+  } else if (weather == "Partly Cloudy") {
+    weathericon.src = "https://img.icons8.com/stickers/100/null/partly-cloudy-day.png"
+  } else if (weather == "Snow") {
+    weathericon.src = "https://img.icons8.com/stickers/100/null/snowflake.png";
+    body.style.backgroundImage = 'url("https://images.unsplash.com/photo-1491002052546-bf38f186af56?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1208&q=80")' // Photo by Adam Chang on Unsplash
+  } else if (weather == "Fog") {
+    weathericon.src = "https://img.icons8.com/stickers/100/null/fog-night.png"
+  } else if (weather == "Tornado") {
+    weathericon.src = "https://img.icons8.com/stickers/100/null/tornado.png"
+  } else if (weather == "Rain" || weather == "Drizzle") {
+    weathericon.src = "https://img.icons8.com/stickers/100/null/rain.png"
+  } else if (weather == "Haze" || weather == "Mist") {
+    weathericon.src = "https://img.icons8.com/stickers/100/null/fog-day.png"
+  } else {
+    weathericon.src = "https://img.icons8.com/stickers/100/null/wind.png"
+  }
 }
 
+function setColorOfPanel(weather_code) {
+  const possible_colors = [
+    { min: 200, max: 232, color: 'rgba(99, 92, 96, 0.8)' },
+    { min: 300, max: 321, color: 'rgba(137, 195, 229, 0.8)' },
+    { min: 500, max: 531, color: 'rgba(1, 83, 212, 0.8)' },
+    { min: 600, max: 622, color: 'rgba(238, 241, 245, 0.8)' },
+    { min: 700, max: 781, color: 'rgba(214, 175, 175, 0.8)' },
+    { min: 800, max: 800, color: 'rgba(255, 231, 96, 0.8)' },
+    { min: 801, max: 804, color: 'rgba(255, 255, 255, 0.8)' }
+  ];
 
+  for (let i = 0; i < possible_colors.length; i++) {
+    if (possible_colors[i].min <= weather_code && possible_colors[i].max >= weather_code) {
+      document.getElementById("panel").style.backgroundColor = possible_colors[i].color
+    }
+  }
+}
+
+function displayExtremeWeatherWarning(weather) {
+  
+  const extreme_weather = ["Tornado", "Thunderstorms with Heavy Rain", "Heavy Snow", "Volcanic Ash", "Extreme Rain", "Heavy Showers and Snow", "Sand Swirls", "Squalls"];
+  const warning = document.getElementById("warning");
+  if (extreme_weather.includes(weather)) {
+    warning.style.display = "block"
+  } else {
+    warning.style.display = "none"
+  }
+}
+
+function randomB() {
+  // An array of image URLs
+  var images =
+    ['https://www.tripsavvy.com/thmb/DftqPmjZUN3xf7NXWKuhM5rdv_o=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-470613027-57a6954a5f9b58974a8df90c.jpg', 'https://www.photographytalk.com/images/articles/2019/06/12/Landscape_Photography_Tips_for_Bad_Weather.jpg', 'https://cdn.visualwilderness.com/wp-content/uploads/2019/03/Four-peaks-snow-pano.jpg', 'https://contrastly.com/wp-content/uploads/bad-weather-1.jpg', 'https://cdn.fstoppers.com/media/2021/01/04/three_simple_landscape_photography_tips_for_shooting_in_grey_and_boring_weather_06.jpg', 'https://cdn.fstoppers.com/styles/full/s3/media/2018/08/21/bad_weather_landscape_photography_snowdonia_tryfan_0.jpg', 'https://ecophiles.com/wp-content/uploads/2017/05/Marble-Caves.jpg', 'http://cdn.cnn.com/cnnnext/dam/assets/190517092027-24-unusual-landscapes-travel.jpg', 'https://live.staticflickr.com/4349/36421874521_19c2b53a17_b.jpg', 'https://live.staticflickr.com/5692/23133599953_0e492e7323_b.jpg', 'https://www.telegraph.co.uk/content/dam/Travel/2018/August/Exmoor-National-Park-GettyImages-582466383.jpg', 'https://cdn.naturettl.com/wp-content/uploads/2016/06/22014547/top-10-landscapes-uk-ross-hoddinott-9.jpg', 'https://wallpaperaccess.com/full/114064.jpg'];
+  var image = images[Math.floor(Math.random() * images.length)];
+  document.getElementById('body').style.backgroundImage = "url('" + image + "')";
+  document.getElementById('body').style.backgroundRepeat = "no-repeat";
+  document.getElementById('body').style.backgroundSize = "cover";
+}
+
+function loadLocationAndTempData(request_type) {
+  if (request_type == "location") {
+    stage += 1;
+    if (stage == 2) {
+      displayTempData()
+    }
+  } else if (request_type == "city") {
+    displayTempData()
+  }
+}
+
+// Call the randomB function when the window finishes loading
+//window.onload = function load() {
+//    randomB();
+//    setDescription(2);
+//};
+
+//setDescription("202")
+//load()
